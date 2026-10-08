@@ -42,7 +42,7 @@ class Experiment:
 
 #TODO Add type indicators in all functions 
 
-    def set_participant(self, name):
+    def set_participant(self, name: str):
         # in: str / out: nothing - a SETTER with a guard
         if name != "":
             self.__participant = name
@@ -59,7 +59,7 @@ class Experiment:
         # in: nothing / out: nothing - the stimulus is on screen NOW.
         self.__start_time = time()
 
-    def record_response(self, key):
+    def record_response(self, key:str) -> bool:
         # in: str / out: bool - was the response correct?
         rt = time() - self.__start_time
 
