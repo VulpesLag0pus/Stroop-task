@@ -47,11 +47,11 @@ class Experiment:
         if name != "":
             self.__participant = name
 
-    def get_participant(self):
+    def get_participant(self) -> str:
         # in: nothing / out: str, returned
         return self.__participant
 
-    def has_next(self):
+    def has_next(self) -> bool:
         # in: nothing / out: bool - are there trials left?
         return self.__current <= len(self.__trials) - 1
 
@@ -81,7 +81,7 @@ class Experiment:
         self.__current = self.__current + 1
         return correct
 
-    def save_results(self, filename):
+    def save_results(self, filename: str):
         # in: str / out: nothing - one line per trial, appended.
         with open(filename, "a") as f:
             for line in self.__results:
