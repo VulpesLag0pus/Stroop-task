@@ -18,7 +18,7 @@ from time import time
 # ====================================================================
 # PART 1: THE ENGINE - your experiment class (no tkinter in here!)
 # ====================================================================
-COLORS = ["red", "green", "blue"]
+
 
 class Experiment:
 
@@ -26,14 +26,21 @@ class Experiment:
         # Born valid: every attribute exists with a safe default.
         self.__participant = "anon"
         self.__trials = []    
+        self.__COLORS = ["red", "green", "blue"]
         for _ in range(nr_trials):
-            word = choice(COLORS)
-            ink = choice(COLORS)
+            word = choice(self.__COLORS)
+            ink = choice(self.__COLORS)
             self.__trials.append((word, ink))    
 
         self.__results = []       # one entry per answered trial
         self.__current = 0
         self.__start_time = 0
+        self.__total_congruent = 0
+        self.__total_incongruent = 0
+        self.__amount_congruent = 0
+        self.__amount_incongruent = 0
+
+#TODO Add type indicators in all functions 
 
     def set_participant(self, name):
         # in: str / out: nothing - a SETTER with a guard
@@ -64,6 +71,13 @@ class Experiment:
                               + str(self.__current + 1) + "/" + key + "/"
                               + str(correct) + "/" + str(round(rt, 3)))
 
+        if correct:
+            self.__total_congruent = self.__total_congruent + rt
+            self.__amount_congruent = self.__amount_congruent + 1
+        else:
+            self.__total_incongruent = self.__total_incongruent + rt
+            self.__amount_incongruent = self.__amount_incongruent + 1
+
         self.__current = self.__current + 1
         return correct
 
@@ -75,6 +89,16 @@ class Experiment:
 
     def get_current(self):
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
+
+    def get_means(self):
+        congruent_mean = self.__total_congruent / self.__amount_congruent
+        incongruent_mean = self.__total_incongruent / self.__amount_incongruent
+        total_mean = (self.__total_congruent + self.__total_incongruent)/(self.__amount_congruent + self.__amount_incongruent)
+        return {'General mean':total_mean, 'Congruent mean':congruent_mean, 'Incongruent mean':incongruent_mean,}
+
+    
+    
+
 
 
 # ====================================================================
@@ -162,16 +186,26 @@ def start():
 
 
 def finish():
-    # the participant ID becomes the file name:
     experiment.save_results(experiment.get_participant() + ".txt")
     stimulus_label.config(text="Done! Thank you.", fg="white")
-    # TODO: show the mean RT per condition here (ask the engine!)
+
     pause_button.destroy()
     start_button.destroy()
     quit_button.destroy()
-    destroy_button = tk.Button(button_frame, text="Destroy window")
+    stimulus_label_correct.destroy()
+
+    for key in experiment.get_means():
+        text = tk.Label(
+            window,
+            text=f"{key}: {round(experiment.get_means()[key], 3)}",
+            fg="white",
+            font=("Arial", 20)
+        )
+        text.pack()
+
+    destroy_button = tk.Button(window, text="Destroy window")
     destroy_button.config(command=window.destroy)
-    destroy_button.pack()
+    destroy_button.pack(pady=20)
 
 
 start_button.config(command=start)
