@@ -42,7 +42,7 @@ class Experiment:
 
 #TODO Add type indicators in all functions 
 
-    def set_participant(self, name: str):
+    def set_participant(self, name: int):
         # in: str / out: nothing - a SETTER with a guard
         if name != "":
             self.__participant = name
