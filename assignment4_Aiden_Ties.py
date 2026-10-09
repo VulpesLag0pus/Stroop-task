@@ -169,7 +169,9 @@ def key_pressed(event):
     if not accepting_keys:
         return                         # too early / between trials: ignore
     accepting_keys = False
-    correct = experiment.record_response(event.keysym.lower())
+
+    if pause_pressed is False:
+        correct = experiment.record_response(event.keysym.lower())
 
     # Showing feedback Right/Wrong
     if correct:
