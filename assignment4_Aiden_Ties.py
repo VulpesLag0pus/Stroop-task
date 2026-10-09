@@ -44,7 +44,6 @@ class Experiment:
                 self.__trials.append((word, ink)) 
 
     def reset_trial(self):
-        self.__current -= 1
         self.randomize_color_ink(nr_trials=10)   
 
     def set_participant(self, name: str):
