@@ -26,7 +26,7 @@ class Experiment:
         # Born valid: every attribute exists with a safe default.
         self.__participant = "anon"
         self.__trials = []    
-        self.__COLORS = ["red", "green", "blue"]
+        self.__COLORS = ["red", "green", "blue", "yellow"]
         self.randomize_color_ink(nr_trials=nr_trials)
         self.__results = []       # one entry per answered trial
         self.__current = 0
