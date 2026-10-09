@@ -96,8 +96,8 @@ class Experiment:
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
 
     def get_means(self):
-        congruent_mean = self.__total_congruent / self.__amount_congruent
-        incongruent_mean = self.__total_incongruent / self.__amount_incongruent
+        congruent_mean = self.__total_congruent / self.__amount_congruent 
+        incongruent_mean = self.__total_incongruent / self.__amount_incongruent 
         total_mean = (self.__total_congruent + self.__total_incongruent)/(self.__amount_congruent + self.__amount_incongruent)
         return {'General mean':total_mean, 'Congruent mean':congruent_mean, 'Incongruent mean':incongruent_mean,}
 
@@ -149,7 +149,7 @@ hearts = 5
 
 def next_trial():
     # Shows the next stimulus - or ends the experiment.
-    if not experiment.has_next():
+    if not experiment.has_next() or hearts == 0: 
         finish()
         return
     stimulus_label.config(text="+", fg="black")      # fixation first
@@ -162,20 +162,32 @@ def show_stimulus():
     experiment.start_trial()           # the clock starts NOW
     accepting_keys = True
 
+def update_hearts():
+    global hearts
+    text = []
+    for _ in range(hearts):
+        text.append("❤️")
+    hearts_label.config(text=f"{"".join(text)}")
+    if hearts == 0:
+        stimulus_label.config(text= "You're hearts ran out, you made too many mistakes!")
 
 def key_pressed(event):
+    global hearts
     global accepting_keys
     if not accepting_keys:
         return                         # too early / between trials: ignore
     accepting_keys = False
 
     correct = experiment.record_response(event.keysym.lower())
+    
 
     # Showing feedback Right/Wrong
     if correct:
         stimulus_label_correct.config(text="Your last answer was right")
     else:
         stimulus_label_correct.config(text="Your last answer was wrong")
+        hearts -= 1
+        update_hearts()
 
     if pause_pressed is False:
         next_trial()
@@ -232,6 +244,10 @@ def pause():
 def quit():
     experiment.save_results(experiment.get_participant() + ".txt")
     window.destroy()
+
+
+
+
 
 start_button.config(command=start)
 pause_button.config(command=pause)
