@@ -85,7 +85,8 @@ class Experiment:
             for line in self.__results:
                 f.write(line + "\n")
 
-    def get_current(self):
+    def get_current(self) -> tuple:
+        # Outputs a list with (word, ink)
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
 
     def get_means(self):
