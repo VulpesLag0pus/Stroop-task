@@ -170,7 +170,8 @@ def key_pressed(event):
     else:
         stimulus_label_correct.config(text="Your last answer was wrong")
 
-    next_trial()
+    if pause_pressed is False:
+        next_trial()
 
 
 def start():
@@ -188,6 +189,7 @@ def start():
 def finish():
     experiment.save_results(experiment.get_participant() + ".txt")
     stimulus_label.config(text="Done! Thank you.", fg="white")
+
 
     pause_button.destroy()
     start_button.destroy()
@@ -207,6 +209,16 @@ def finish():
     destroy_button.config(command=window.destroy)
     destroy_button.pack(pady=20)
 
+def pause():
+    if pause_pressed is False:
+        pause_pressed = True
+    else:
+        pause_pressed = False
+
+
+
+
+    
 
 start_button.config(command=start)
 quit_button.config(command="") #TODO build a Quit function
