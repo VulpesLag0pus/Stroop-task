@@ -222,6 +222,8 @@ def pause():
     global pause_pressed 
     global accepting_keys
     if pause_pressed is False:
+        stimulus_label.config(text="Paused", foreground="black")
+        experiment.reset_trial()
         pause_pressed = True
         accepting_keys = False
     else:
