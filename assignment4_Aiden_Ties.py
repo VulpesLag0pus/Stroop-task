@@ -37,6 +37,7 @@ class Experiment:
         self.__amount_incongruent = 0
 
     def randomize_color_ink(self, nr_trials):
+            self.__trials.clear()
             for _ in range(nr_trials):
                 word = choice(self.__COLORS)
                 ink = choice(self.__COLORS)
