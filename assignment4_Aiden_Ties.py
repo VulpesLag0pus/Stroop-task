@@ -170,8 +170,7 @@ def key_pressed(event):
         return                         # too early / between trials: ignore
     accepting_keys = False
 
-    if pause_pressed is False:
-        correct = experiment.record_response(event.keysym.lower())
+    correct = experiment.record_response(event.keysym.lower())
 
     # Showing feedback Right/Wrong
     if correct:
@@ -219,12 +218,15 @@ def finish():
     destroy_button.pack(pady=20)
 
 def pause():
-    global pause_pressed
+    global pause_pressed 
+    global accepting_keys
     if pause_pressed is False:
         pause_pressed = True
+        accepting_keys = False
     else:
         pause_pressed = False
-        next_trial()
+        accepting_keys = True
+        next_trial() 
 
 
 
