@@ -27,11 +27,7 @@ class Experiment:
         self.__participant = "anon"
         self.__trials = []    
         self.__COLORS = ["red", "green", "blue"]
-        for _ in range(nr_trials):
-            word = choice(self.__COLORS)
-            ink = choice(self.__COLORS)
-            self.__trials.append((word, ink))    
-
+        self.randomize_color_ink(nr_trials=nr_trials)
         self.__results = []       # one entry per answered trial
         self.__current = 0
         self.__start_time = 0
@@ -39,6 +35,12 @@ class Experiment:
         self.__total_incongruent = 0
         self.__amount_congruent = 0
         self.__amount_incongruent = 0
+
+    def randomize_color_ink(self, nr_trials):
+            for _ in range(nr_trials):
+                word = choice(self.__COLORS)
+                ink = choice(self.__COLORS)
+                self.__trials.append((word, ink))    
 
     def set_participant(self, name: str):
         # in: str / out: nothing - a SETTER with a guard
