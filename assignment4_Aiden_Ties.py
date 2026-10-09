@@ -69,7 +69,7 @@ class Experiment:
                               + str(self.__current + 1) + "/" + key + "/"
                               + str(correct) + "/" + str(round(rt, 3)))
 
-        if self.get_current() [0] == self.get_current() [1] :
+        if self.get_current()[0] == self.get_current()[1] :
             self.__total_congruent = self.__total_congruent + rt
             self.__amount_congruent = self.__amount_congruent + 1
         else:
@@ -137,6 +137,7 @@ quit_button.pack(side="right", padx=5)
 # Only react to response keys while a stimulus is on screen - without
 # this guard, a key during the fixation cross records a garbage RT!
 accepting_keys = False
+pause_pressed = False
 
 
 
