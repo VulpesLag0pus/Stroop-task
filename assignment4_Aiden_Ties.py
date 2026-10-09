@@ -137,12 +137,7 @@ pause_button.pack(side="left", padx=5)
 quit_button = tk.Button(button_frame, text="Quit")
 quit_button.pack(side="right", padx=5)
 
-# TODO:
-#   Pause must take effect BETWEEN trials (think: where does the trial
-#   chain decide to continue?). Quit must SAVE first, then window.destroy().
 
-# Only react to response keys while a stimulus is on screen - without
-# this guard, a key during the fixation cross records a garbage RT!
 accepting_keys = False
 pause_pressed = False
 
@@ -230,16 +225,13 @@ def pause():
         accepting_keys = True
         next_trial() 
 
-
-
-
-
-
-    
+def quit():
+    experiment.save_results(experiment.get_participant() + ".txt")
+    window.destroy()
 
 start_button.config(command=start)
 pause_button.config(command=pause)
-quit_button.config(command="") #TODO build a Quit function
+quit_button.config(command=quit)#TODO build a Quit function
 
 window.bind("r", key_pressed)
 window.bind("g", key_pressed)   
