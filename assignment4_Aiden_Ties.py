@@ -236,5 +236,6 @@ quit_button.config(command=quit)#TODO build a Quit function
 window.bind("r", key_pressed)
 window.bind("g", key_pressed)   
 window.bind("b", key_pressed)
+window.bind("y", key_pressed)
 
 window.mainloop()
