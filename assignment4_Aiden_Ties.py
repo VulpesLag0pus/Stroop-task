@@ -116,6 +116,7 @@ experiment = Experiment()
 window = tk.Tk()
 window.title("My Stroop experiment")
 window.minsize(width=600, height=400)
+window.config(background="black")
 
 stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start",
                           font=("Arial", 32))
