@@ -210,10 +210,13 @@ def finish():
     destroy_button.pack(pady=20)
 
 def pause():
+    global pause_pressed
     if pause_pressed is False:
         pause_pressed = True
     else:
         pause_pressed = False
+        
+
 
 
 
@@ -221,6 +224,7 @@ def pause():
     
 
 start_button.config(command=start)
+pause_button.config(command=pause)
 quit_button.config(command="") #TODO build a Quit function
 
 window.bind("r", key_pressed)
