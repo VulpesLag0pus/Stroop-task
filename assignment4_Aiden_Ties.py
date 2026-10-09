@@ -116,12 +116,12 @@ experiment = Experiment()
 window = tk.Tk()
 window.title("My Stroop experiment")
 window.minsize(width=600, height=400)
-window.config(background="black")
+window.config(background="white")
 
 stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start",
                           font=("Arial", 32))
 stimulus_label.pack(expand=True)
-stimulus_label_correct = tk.Label(window, text="", fg='white', font=("Arial", 20))
+stimulus_label_correct = tk.Label(window, text="", fg='black', font=("Arial", 20))
 stimulus_label_correct.pack(expand=True)
 
 id_entry = tk.Entry(window, width=20)     # tkinter, not turtle: a text field
@@ -197,7 +197,7 @@ def start():
 
 def finish():
     experiment.save_results(experiment.get_participant() + ".txt")
-    stimulus_label.config(text="Done! Thank you.", fg="white")
+    stimulus_label.config(text="Done! Thank you.", fg="black")
 
 
     pause_button.destroy()
@@ -209,7 +209,7 @@ def finish():
         text = tk.Label(
             window,
             text=f"{key}: {round(experiment.get_means()[key], 3)}",
-            fg="white",
+            fg="black",
             font=("Arial", 20)
         )
         text.pack()
