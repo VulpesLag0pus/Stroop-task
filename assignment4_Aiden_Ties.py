@@ -41,7 +41,11 @@ class Experiment:
             for _ in range(nr_trials):
                 word = choice(self.__COLORS)
                 ink = choice(self.__COLORS)
-                self.__trials.append((word, ink))    
+                self.__trials.append((word, ink)) 
+
+    def reset_trial(self):
+        self.__current -= 1
+        self.randomize_color_ink(nr_trials=10)   
 
     def set_participant(self, name: str):
         # in: str / out: nothing - a SETTER with a guard
