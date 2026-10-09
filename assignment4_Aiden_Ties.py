@@ -69,7 +69,7 @@ class Experiment:
                               + str(self.__current + 1) + "/" + key + "/"
                               + str(correct) + "/" + str(round(rt, 3)))
 
-        if correct:
+        if self.get_current() [0] == self.get_current() [1] :
             self.__total_congruent = self.__total_congruent + rt
             self.__amount_congruent = self.__amount_congruent + 1
         else:
