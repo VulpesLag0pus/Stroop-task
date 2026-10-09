@@ -117,6 +117,9 @@ window.title("My Stroop experiment")
 window.minsize(width=600, height=400)
 window.config(background="white")
 
+hearts_label = tk.Label(window, text="❤️❤️❤️❤️❤️", font=("Arial", 40))
+hearts_label.pack(pady=20)
+
 stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start",
                           font=("Arial", 32))
 stimulus_label.pack(expand=True)
@@ -140,6 +143,7 @@ quit_button.pack(side="right", padx=5)
 
 accepting_keys = False
 pause_pressed = False
+hearts = 5
 
 
 
