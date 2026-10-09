@@ -40,9 +40,7 @@ class Experiment:
         self.__amount_congruent = 0
         self.__amount_incongruent = 0
 
-#TODO Add type indicators in all functions 
-
-    def set_participant(self, name: int):
+    def set_participant(self, name: str):
         # in: str / out: nothing - a SETTER with a guard
         if name != "":
             self.__participant = name
