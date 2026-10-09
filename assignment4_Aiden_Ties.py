@@ -215,7 +215,8 @@ def pause():
         pause_pressed = True
     else:
         pause_pressed = False
-        
+        next_trial()
+
 
 
 
