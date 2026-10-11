@@ -22,8 +22,9 @@ from time import time
 
 class Experiment:
 
-    def __init__(self, nr_trials=10):
+    def __init__(self, nr_trials: int = 10) -> None:
         # Born valid: every attribute exists with a safe default.
+        self.__nr_trials = nr_trials
         self.__participant = "anon"
         self.__trials = []    
         self.__COLORS = ["red", "green", "blue", "yellow"]
@@ -36,17 +37,17 @@ class Experiment:
         self.__amount_congruent = 0
         self.__amount_incongruent = 0
 
-    def randomize_color_ink(self, nr_trials):
+    def randomize_color_ink(self, nr_trials: int) -> None:
             self.__trials.clear()
             for _ in range(nr_trials):
                 word = choice(self.__COLORS)
                 ink = choice(self.__COLORS)
                 self.__trials.append((word, ink)) 
 
-    def reset_trial(self):
-        self.randomize_color_ink(nr_trials=10)   
+    def reset_trial(self) -> None:
+        self.randomize_color_ink(nr_trials=self.__nr_trials)   
 
-    def set_participant(self, name: str):
+    def set_participant(self, name: str) -> None:
         # in: str / out: nothing - a SETTER with a guard
         if name != "":
             self.__participant = name
@@ -59,11 +60,11 @@ class Experiment:
         # in: nothing / out: bool - are there trials left?
         return self.__current <= len(self.__trials) - 1
 
-    def start_trial(self):
+    def start_trial(self) -> None:
         # in: nothing / out: nothing - the stimulus is on screen NOW.
         self.__start_time = time()
 
-    def record_response(self, key:str) -> bool:
+    def record_response(self, key: str) -> bool:
         # in: str / out: bool - was the response correct?
         rt = time() - self.__start_time
 
@@ -85,17 +86,17 @@ class Experiment:
         self.__current = self.__current + 1
         return correct
 
-    def save_results(self, filename: str):
+    def save_results(self, filename: str) -> None:
         # in: str / out: nothing - one line per trial, appended.
         with open(filename, "a") as f:
             for line in self.__results:
                 f.write(line + "\n")
 
-    def get_current(self) -> tuple:
+    def get_current(self) -> tuple[str, str]:
         # Outputs a tuple with (word, ink)
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
 
-    def get_means(self):
+    def get_means(self) -> dict[str, float]:
         congruent_mean = self.__total_congruent / self.__amount_congruent if self.__amount_congruent != 0 else 0
         incongruent_mean = self.__total_incongruent / self.__amount_incongruent if self.__amount_incongruent != 0 else 0
         return {'Congruent RT':congruent_mean, 'Incongruent RT':incongruent_mean,}
@@ -139,37 +140,39 @@ quit_button = tk.Button(button_frame, text="Quit")
 quit_button.pack(side="right", padx=5)
 
 
-accepting_keys = False
-pause_pressed = False
-hearts = 5
+accepting_keys: bool = False
+pause_pressed: bool = False
+hearts: int = 5
+after_id: str | None = None     # id of the scheduled show_stimulus call
 
 
 
-def next_trial():
+def next_trial() -> None:
     # Shows the next stimulus - or ends the experiment.
+    global after_id
     if not experiment.has_next() or hearts == 0: 
         finish()
         if hearts == 0:
-            stimulus_label.config(text= "You're hearts ran out, you made too many mistakes!")
+            stimulus_label.config(text= "Your hearts ran out, you made too many mistakes!")
         return
     stimulus_label.config(text="+", fg="black")      # fixation first
-    window.after(randint(800, 1500), show_stimulus)  # then the stimulus
+    after_id = window.after(randint(800, 1500), show_stimulus)  # then the stimulus
 
 
-def show_stimulus():
+def show_stimulus() -> None:
     global accepting_keys
     stimulus_label.config(text=experiment.get_current()[0], fg=experiment.get_current()[1])
     experiment.start_trial()           # the clock starts NOW
     accepting_keys = True
 
-def update_hearts():
+def update_hearts() -> None:
     global hearts
     text = []
     for _ in range(hearts):
         text.append("❤️")
     hearts_label.config(text=f"{"".join(text)}")
 
-def key_pressed(event):
+def key_pressed(event: tk.Event) -> None:
     global hearts
     global accepting_keys
     if not accepting_keys:
@@ -191,8 +194,9 @@ def key_pressed(event):
         next_trial()
 
 
-def start():
+def start() -> None:
     # reads the Entry, guards it, hands the ID to the ENGINE
+    global pause_pressed
     pid = id_entry.get().strip()
     if pid == "":
         stimulus_label.config(text="Please enter a participant ID!")
@@ -200,10 +204,11 @@ def start():
     experiment.set_participant(pid)
     id_entry.destroy()        # the form leaves the stage
     start_button.destroy()
+    pause_pressed = False     # a Pause clicked before Start must not carry over
     next_trial()
 
 
-def finish():
+def finish() -> None:
     experiment.save_results(experiment.get_participant() + ".txt")
     stimulus_label.config(text="Done! Thank you.", fg="black")
 
@@ -226,20 +231,23 @@ def finish():
     destroy_button.config(command=window.destroy)
     destroy_button.pack(pady=20)
 
-def pause():
+def pause() -> None:
     global pause_pressed 
     global accepting_keys
+    global after_id
     if pause_pressed is False:
         stimulus_label.config(text="Paused", foreground="black")
+        if after_id is not None:
+            window.after_cancel(after_id)   # stop a pending stimulus
+            after_id = None
         experiment.reset_trial()
         pause_pressed = True
         accepting_keys = False
     else:
         pause_pressed = False
-        accepting_keys = True
-        next_trial() 
+        next_trial()    # show_stimulus turns accepting_keys back on
 
-def quit():
+def quit_experiment() -> None:
     experiment.save_results(experiment.get_participant() + ".txt")
     window.destroy()
 
@@ -249,7 +257,7 @@ def quit():
 
 start_button.config(command=start)
 pause_button.config(command=pause)
-quit_button.config(command=quit)#TODO build a Quit function
+quit_button.config(command=quit_experiment)
 
 window.bind("r", key_pressed)
 window.bind("g", key_pressed)   
