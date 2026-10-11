@@ -96,10 +96,9 @@ class Experiment:
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
 
     def get_means(self):
-        congruent_mean = self.__total_congruent / self.__amount_congruent 
-        incongruent_mean = self.__total_incongruent / self.__amount_incongruent 
-        total_mean = (self.__total_congruent + self.__total_incongruent)/(self.__amount_congruent + self.__amount_incongruent)
-        return {'General mean':total_mean, 'Congruent mean':congruent_mean, 'Incongruent mean':incongruent_mean,}
+        congruent_mean = self.__total_congruent / self.__amount_congruent if self.__amount_congruent != 0 else 0
+        incongruent_mean = self.__total_incongruent / self.__amount_incongruent if self.__amount_incongruent != 0 else 0
+        return {'Congruent RT':congruent_mean, 'Incongruent RT':incongruent_mean,}
 
     
     
@@ -115,7 +114,6 @@ experiment = Experiment()
 window = tk.Tk()
 window.title("My Stroop experiment")
 window.minsize(width=600, height=400)
-window.config(background="white")
 
 hearts_label = tk.Label(window, text="❤️❤️❤️❤️❤️", font=("Arial", 40))
 hearts_label.pack(pady=20)
@@ -151,6 +149,8 @@ def next_trial():
     # Shows the next stimulus - or ends the experiment.
     if not experiment.has_next() or hearts == 0: 
         finish()
+        if hearts == 0:
+            stimulus_label.config(text= "You're hearts ran out, you made too many mistakes!")
         return
     stimulus_label.config(text="+", fg="black")      # fixation first
     window.after(randint(800, 1500), show_stimulus)  # then the stimulus
@@ -168,8 +168,6 @@ def update_hearts():
     for _ in range(hearts):
         text.append("❤️")
     hearts_label.config(text=f"{"".join(text)}")
-    if hearts == 0:
-        stimulus_label.config(text= "You're hearts ran out, you made too many mistakes!")
 
 def key_pressed(event):
     global hearts
