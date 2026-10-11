@@ -66,6 +66,8 @@ class Experiment:
 
     def record_response(self, key: str) -> bool:
         # in: str / out: bool - was the response correct?
+        if not self.has_next():
+            return False  
         rt = time() - self.__start_time
 
         # Judges key against first letter of ink color
@@ -86,14 +88,19 @@ class Experiment:
         self.__current = self.__current + 1
         return correct
 
-    def save_results(self, filename: str) -> None:
-        # in: str / out: nothing - one line per trial, appended.
-        with open(filename, "a") as f:
-            for line in self.__results:
-                f.write(line + "\n")
+    def save_results(self, filename: str) -> bool:
+        try:
+            with open(filename, "a") as f:
+                for line in self.__results:
+                    f.write(line + "\n")
+            return True
+        except OSError:
+            return False
 
     def get_current(self) -> tuple[str, str]:
         # Outputs a tuple with (word, ink)
+        if not self.has_next():
+            return ("", "")
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
 
     def get_means(self) -> dict[str, float]:
@@ -142,8 +149,11 @@ quit_button.pack(side="right", padx=5)
 
 accepting_keys: bool = False
 pause_pressed: bool = False
+started: bool = False
 hearts: int = 5
-after_id: str | None = None     # id of the scheduled show_stimulus call
+after_id: str | None = None   
+retry_entry: tk.Entry | None = None    
+retry_button: tk.Button | None = None 
 
 
 
@@ -197,6 +207,7 @@ def key_pressed(event: tk.Event) -> None:
 def start() -> None:
     # reads the Entry, guards it, hands the ID to the ENGINE
     global pause_pressed
+    global started
     pid = id_entry.get().strip()
     if pid == "":
         stimulus_label.config(text="Please enter a participant ID!")
@@ -205,12 +216,13 @@ def start() -> None:
     id_entry.destroy()        # the form leaves the stage
     start_button.destroy()
     pause_pressed = False     # a Pause clicked before Start must not carry over
+    started = True
     next_trial()
 
 
 def finish() -> None:
-    experiment.save_results(experiment.get_participant() + ".txt")
-    stimulus_label.config(text="Done! Thank you.", fg="black")
+    saved = experiment.save_results(experiment.get_participant() + ".txt")
+    stimulus_label.config(text="Done! Thank you." if saved else "Done! But your data could not be saved.",fg="black")
 
 
     pause_button.destroy()
@@ -235,6 +247,8 @@ def pause() -> None:
     global pause_pressed 
     global accepting_keys
     global after_id
+    if not started:
+        return                          # Pause does nothing before Start
     if pause_pressed is False:
         stimulus_label.config(text="Paused", foreground="black")
         if after_id is not None:
@@ -247,9 +261,37 @@ def pause() -> None:
         pause_pressed = False
         next_trial()    # show_stimulus turns accepting_keys back on
 
+
 def quit_experiment() -> None:
-    experiment.save_results(experiment.get_participant() + ".txt")
-    window.destroy()
+    global retry_entry, retry_button
+    if experiment.save_results(experiment.get_participant() + ".txt"):
+        window.destroy()
+        return
+
+    stimulus_label.config(
+        text="Something went wrong with saving your data,\n"
+             "please input an ID without special characters",
+        fg="black")
+
+    if retry_entry is None:
+        retry_entry = tk.Entry(window, width=20)
+        retry_entry.pack()
+        retry_button = tk.Button(window, text="Save with new ID",
+                                 command=save_with_new_id)
+        retry_button.pack(pady=5)
+
+
+def save_with_new_id() -> None:
+    if retry_entry is None:
+        return
+    new_id = retry_entry.get().strip()
+    if new_id == "" or not all(c.isalnum() or c in "-_" for c in new_id):
+        stimulus_label.config(text="Use only letters, numbers, - or _",
+                              fg="black")
+        return
+    experiment.set_participant(new_id)
+    quit_experiment()
+    
 
 
 
