@@ -126,7 +126,7 @@ stimulus_label.pack(expand=True)
 stimulus_label_correct = tk.Label(window, text="", fg='black', font=("Arial", 20))
 stimulus_label_correct.pack(expand=True)
 
-id_entry = tk.Entry(window, width=20)     # tkinter, not turtle: a text field
+id_entry = tk.Entry(window, width=20)
 id_entry.pack()
 
 button_frame = tk.Frame(window)           # a Frame groups the buttons
