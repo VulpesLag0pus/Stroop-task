@@ -67,6 +67,10 @@ retry_button: tk.Button | None = None
 
 def next_trial() -> None:
     # Shows the next stimulus - or ends the experiment.
+    # In - nothing
+    # Out - nothing (the screen changes, no return needed)
+    # One Job - starts the next trials cross or end the next trial if none are there 
+
     global after_id
     if not experiment.has_next() or hearts == 0: 
         finish()
@@ -78,12 +82,18 @@ def next_trial() -> None:
 
 
 def show_stimulus() -> None:
+    # In - nothing
+    # Out - nothing
+                         # TODO does two jobs, thus needs to be split - shows the colored word and start the reaction timer
     global accepting_keys
     stimulus_label.config(text=experiment.get_current()[0], fg=experiment.get_current()[1])
     experiment.start_trial()
     accepting_keys = True
 
 def update_hearts() -> None:
+    # In - nothing
+    # Out - nothing
+    # One Job - replaces the hearts to match the current heart count
     global hearts
     text = []
     for _ in range(hearts):
@@ -91,6 +101,7 @@ def update_hearts() -> None:
     hearts_label.config(text=f'{"".join(text)}')
 
 def key_pressed(event: tk.Event) -> None:
+                            # TODO does two jobs thus needs to be split - presents the pressed key to engine and then presents if true or false answer
     global hearts
     global accepting_keys
     if not accepting_keys:
@@ -113,6 +124,7 @@ def key_pressed(event: tk.Event) -> None:
 
 
 def start() -> None:
+                            #TODO does two jobs, thus must split - accepts the ID and also begins the Stroop test
     # reads the Entry, guards it, hands the ID to the ENGINE
     global pause_pressed
     global started
@@ -129,6 +141,7 @@ def start() -> None:
 
 
 def finish() -> None:
+                            # TODO does mtwo jobs, thus must split - calls save_data  and Show_results???
     saved = experiment.save_results(experiment.get_participant() + ".txt")
     stimulus_label.config(text="Done! Thank you." if saved else "Done! But your data could not be saved.",fg="black")
 
@@ -153,6 +166,9 @@ def finish() -> None:
     
 
 def pause() -> None:
+    # In- nothing
+    # Out - nothing
+    # One Job - stops and starts teh program
     global pause_pressed 
     global accepting_keys
     global after_id
@@ -191,6 +207,9 @@ def quit_experiment() -> None:
 
 
 def save_with_new_id() -> None:
+    # In - nothing
+    # Out - nothing
+    # One Job - accepts a replacement ID and retrys the save
     if retry_entry is None:
         return
     new_id = retry_entry.get().strip()

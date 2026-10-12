@@ -5,6 +5,9 @@ from time import time
 class Experiment:
 
     def __init__(self, nr_trials: int = 10) -> None:
+        # In - nr_trials, the trials it needs to run
+        # Out - nothing 
+        # One Job - gives the initializers a starting value
         # Born valid: every attribute exists with a safe default.
         self.__nr_trials = nr_trials
         self.__participant = "anon"
