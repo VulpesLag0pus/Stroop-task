@@ -11,7 +11,7 @@
 #   what goes IN? what comes OUT (return or print)? what is its ONE job?
 
 import tkinter as tk
-from random import randint, choice
+from random import randint, choice, shuffle
 from time import time
 
 
@@ -38,14 +38,33 @@ class Experiment:
         self.__amount_incongruent = 0
 
     def randomize_color_ink(self, nr_trials: int) -> None:
-            self.__trials.clear()
-            for _ in range(nr_trials):
+            while len(self.__trials) < (self.__nr_trials/2):
                 word = choice(self.__COLORS)
                 ink = choice(self.__COLORS)
+                if word != ink:
+                    self.__trials.append([word, ink]) 
+
+            for _ in range(int(nr_trials/2)):
+                word = choice(self.__COLORS)
+                ink = word
                 self.__trials.append((word, ink)) 
 
+            shuffle(self.__trials)
+
+
     def reset_trial(self) -> None:
-        self.randomize_color_ink(nr_trials=self.__nr_trials)   
+        if self.get_current()[0] == self.get_current()[1]:
+           word = choice(self.__COLORS)
+           self.__trials[self.__current][0] = word
+           self.__trials[self.__current][1] = word
+        else:
+            self.__trials[self.__current][0] = choice(self.__COLORS)
+            self.__trials[self.__current][1] = choice(self.__COLORS)
+            while self.__trials[self.__current][0] == self.__trials[self.__current][1]:
+                self.__trials[self.__current][0] = choice(self.__COLORS)
+                self.__trials[self.__current][1] = choice(self.__COLORS)
+           
+           
 
     def set_participant(self, name: str) -> None:
         # in: str / out: nothing - a SETTER with a guard
@@ -76,7 +95,7 @@ class Experiment:
         # Appends all info into .txt file
         self.__results.append(self.__participant + "/"
                               + str(self.__current + 1) + "/" + key + "/"
-                              + str(correct) + "/" + str(round(rt, 3)))
+                              + str(correct) + "/" + str(round(rt, 3))) #TODO word, ink and congruent are missing, and key is in the wrong position.
 
         if self.get_current()[0] == self.get_current()[1] :
             self.__total_congruent = self.__total_congruent + rt
@@ -126,7 +145,7 @@ window.minsize(width=600, height=400)
 hearts_label = tk.Label(window, text="❤️❤️❤️❤️❤️", font=("Arial", 40))
 hearts_label.pack(pady=20)
 
-stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start",
+stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start", #TODO We need to explain the experiment
                           font=("Arial", 32))
 stimulus_label.pack(expand=True)
 stimulus_label_correct = tk.Label(window, text="", fg='black', font=("Arial", 20))
@@ -180,7 +199,7 @@ def update_hearts() -> None:
     text = []
     for _ in range(hearts):
         text.append("❤️")
-    hearts_label.config(text=f"{"".join(text)}")
+    hearts_label.config(text=f'{"".join(text)}')
 
 def key_pressed(event: tk.Event) -> None:
     global hearts
@@ -240,8 +259,9 @@ def finish() -> None:
         text.pack()
 
     destroy_button = tk.Button(window, text="Destroy window")
-    destroy_button.config(command=window.destroy)
+    destroy_button.config(command=quit_experiment)
     destroy_button.pack(pady=20)
+    
 
 def pause() -> None:
     global pause_pressed 
@@ -307,3 +327,13 @@ window.bind("b", key_pressed)
 window.bind("y", key_pressed)
 
 window.mainloop()
+
+#TODO Pause happens mid-trial, not between trials. pause() cancels the pending stimulus and sets accepting_keys = False immediately.
+#  If it’s clicked while a word is showing, the word disappears, the answer is discarded, and the trial is redone. 
+# reset_trial() also re-randomizes all remaining trials, which breaks any balancing. The if pause_pressed is False check in key_pressed is effectively dead code, 
+# because pause() already blocks keys. Instead, make Pause only set a flag and act on it after the current answer:
+
+#TODO Split the files. The assignment wants the engine and a separate GUI layer that imports it, and the grader runs python stroop_gui.py.
+#  Move Experiment into something like stroop_engine.py, and put the GUI in stroop_gui.py with from stroop_engine import Experiment.
+
+#TODO We need to add comments in throughout the whole file after we finish it
