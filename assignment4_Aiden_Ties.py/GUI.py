@@ -15,7 +15,26 @@ window.minsize(width=600, height=400)
 hearts_label = tk.Label(window, text="❤️❤️❤️❤️❤️", font=("Arial", 40))
 hearts_label.pack(pady=20)
 
-stimulus_label = tk.Label(window, text="Type your participant ID,\nthen click Start", #TODO We need to explain the experiment
+Stroop_test_label = tk.Label(window, text= 
+                                        "STROOP TEST",
+                                     font=("Ariel", 32)   )
+Stroop_test_label.pack(pady=20)
+
+
+instructions_label = tk.Label(window, text= 
+                                            "\n"
+                                            "Words will appear in different colors. \n"
+                                            "You will press the key that corresponds to the ink color, not the word. \n"
+                                            "For example, press R = red     G = green   B = blue    Y = yellow. \n"
+                                            "Respond fast as your reaction time is being measured. \n"
+                                            "You have five hearts; if you get 5 answers wrong, the test will stop."
+                                            "\n",   
+                                            font=("Arial", 25))
+instructions_label.pack(pady=20)                 
+
+stimulus_label = tk.Label(window, text= (
+    "Type your participant ID,\nthen click Start"
+), 
                           font=("Arial", 32))
 stimulus_label.pack(expand=True)
 stimulus_label_correct = tk.Label(window, text="", fg='black', font=("Arial", 20))
