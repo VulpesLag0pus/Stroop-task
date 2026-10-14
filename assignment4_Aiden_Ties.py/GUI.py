@@ -131,7 +131,7 @@ def key_pressed(event: tk.Event) -> None:
         next_trial()
 
 def accept_id() -> bool:
-    """ Job: validates the inputed ID, and returns trye"""
+    """ Job: validates the inputted ID, and returns try"""
     pid = id_entry.get().strip()
     if pid == "":
         stimulus_label.config(text="Please enter a participant ID!")

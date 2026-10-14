@@ -66,7 +66,7 @@ class Experiment:
         self.__start_time = time()
 
     def record_response(self, key: str) -> bool:
-        # in: str / out: bool - was the response correct?
+        '''Saves data, determines if correct and tracks amount and total of incongruent and congruent'''
         if not self.has_next():
             return False  
         rt = time() - self.__start_time
@@ -78,8 +78,8 @@ class Experiment:
         self.__results.append(self.__participant + "/"
                               + str(self.__current + 1) + "/" + self.get_current()[0] + "/" + self.get_current()[1] + "/" 
                               + f'{"Congruent" if self.current_is_congruent() else "Incongruent"}' + "/" + key + "/"
-                              + str(correct) + "/" + str(round(rt, 3))) #TODO word, ink and congruent are missing, and key is in the wrong position.
-                                                                        #participant/trial/word/ink/congruent/key/correct/rt
+                              + str(correct) + "/" + str(round(rt, 3))) 
+        
         if self.current_is_congruent():
             self.__total_congruent = self.__total_congruent + rt
             self.__amount_congruent = self.__amount_congruent + 1
