@@ -67,10 +67,7 @@ retry_button: tk.Button | None = None
 
 def next_trial() -> None:
     # Shows the next stimulus - or ends the experiment.
-    # In - nothing
-    # Out - nothing (the screen changes, no return needed)
-    # One Job - starts the next trials cross or end the next trial if none are there 
-
+    """Job: starts the next trials cross or end the next trial if none are there"""
     global after_id
     if not experiment.has_next() or hearts == 0: 
         finish()
