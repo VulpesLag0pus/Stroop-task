@@ -76,10 +76,11 @@ class Experiment:
 
         # Appends all info into .txt file
         self.__results.append(self.__participant + "/"
-                              + str(self.__current + 1) + "/" + key + "/"
+                              + str(self.__current + 1) + "/" + self.get_current()[0] + "/" + self.get_current()[1] + "/" 
+                              + f'{"Congruent" if self.current_is_congruent() else "Incongruent"}' + "/" + key + "/"
                               + str(correct) + "/" + str(round(rt, 3))) #TODO word, ink and congruent are missing, and key is in the wrong position.
-
-        if self.get_current()[0] == self.get_current()[1] :
+                                                                        #participant/trial/word/ink/congruent/key/correct/rt
+        if self.current_is_congruent():
             self.__total_congruent = self.__total_congruent + rt
             self.__amount_congruent = self.__amount_congruent + 1
         else:
@@ -99,7 +100,7 @@ class Experiment:
             return False
 
     def get_current(self) -> tuple[str, str]:
-        # Outputs a tuple with (word, ink)
+        '''Outputs a tuple with (word, ink)'''
         if not self.has_next():
             return ("", "")
         return (self.__trials[self.__current][0], self.__trials[self.__current][1])
@@ -108,3 +109,10 @@ class Experiment:
         congruent_mean = self.__total_congruent / self.__amount_congruent if self.__amount_congruent != 0 else 0
         incongruent_mean = self.__total_incongruent / self.__amount_incongruent if self.__amount_incongruent != 0 else 0
         return {'Congruent RT':congruent_mean, 'Incongruent RT':incongruent_mean,}
+
+    def current_is_congruent(self) -> bool:
+        '''Returns if current stimuli is congruent'''
+        if self.get_current()[0] == self.get_current()[1]:
+            return True
+        else:
+            return False
