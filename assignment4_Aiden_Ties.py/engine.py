@@ -6,8 +6,7 @@ class Experiment:
 
     def __init__(self, nr_trials: int = 10) -> None:
         # In - nr_trials, the trials it needs to run
-        # Out - nothing 
-        # One Job - gives the initializers a starting value
+        #  nothing 
         # Born valid: every attribute exists with a safe default.
         self.__nr_trials = nr_trials
         self.__participant = "anon"
@@ -47,9 +46,7 @@ class Experiment:
             self.__trials[self.__current][1] = choice(self.__COLORS)
             while self.__trials[self.__current][0] == self.__trials[self.__current][1]:
                 self.__trials[self.__current][0] = choice(self.__COLORS)
-                self.__trials[self.__current][1] = choice(self.__COLORS)
-           
-           
+                self.__trials[self.__current][1] = choice(self.__COLORS)          
 
     def set_participant(self, name: str) -> None:
         # in: str / out: nothing - a SETTER with a guard

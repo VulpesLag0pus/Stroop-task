@@ -80,38 +80,39 @@ def next_trial() -> None:
     stimulus_label.config(text="+", fg="black")
     after_id = window.after(randint(800, 1500), show_stimulus)
 
-
-def show_stimulus() -> None:
-    # In - nothing
-    # Out - nothing
-                         # TODO does two jobs, thus needs to be split - shows the colored word and start the reaction timer
-    global accepting_keys
+def color_stimulus() -> None:
+    """Job: put the colored word on the screen"""
+    word, color = experiment.get_current()
     stimulus_label.config(text=experiment.get_current()[0], fg=experiment.get_current()[1])
+
+def start_timer() -> None:
+    """Job: start the timer after pressing start"""
+    global accepting_keys
     experiment.start_trial()
     accepting_keys = True
+
+def show_stimulus() -> None:
+    """Job: show word and start clock"""
+    color_stimulus()
+    start_timer() 
 
 def update_hearts() -> None:
     # In - nothing
     # Out - nothing
-    # One Job - replaces the hearts to match the current heart count
+    """Job: replaces the hearts to match the current heart count"""
     global hearts
     text = []
     for _ in range(hearts):
         text.append("❤️")
     hearts_label.config(text=f'{"".join(text)}')
 
-def key_pressed(event: tk.Event) -> None:
-                            # TODO does two jobs thus needs to be split - presents the pressed key to engine and then presents if true or false answer
+def records_pressed_key(event: tk.Event) -> bool:
+    """Job: to record the pressed key and feed to the engine"""
+    return experiment.record_response(event.keysym.lower())
+
+def displays_answer(correct: bool) -> None:
+    """Job: shows if correct or not and will delete a heart if not"""
     global hearts
-    global accepting_keys
-    if not accepting_keys:
-        return                         # too early / between trials: ignore
-    accepting_keys = False
-
-    correct = experiment.record_response(event.keysym.lower())
-    
-
-    # Showing feedback Right/Wrong
     if correct:
         stimulus_label_correct.config(text="Your last answer was right")
     else:
@@ -119,56 +120,81 @@ def key_pressed(event: tk.Event) -> None:
         hearts -= 1
         update_hearts()
 
+def key_pressed(event: tk.Event) -> None:
+    """Job: it moves on from last press while recording answers"""                         
+    global accepting_keys
+    if not accepting_keys:
+        return                         # too early / between trials: ignore
+    accepting_keys = False
+
+    correct = records_pressed_key(event)
+    displays_answer(correct)
+    
     if pause_pressed is False:
         next_trial()
 
-
-def start() -> None:
-                            #TODO does two jobs, thus must split - accepts the ID and also begins the Stroop test
-    # reads the Entry, guards it, hands the ID to the ENGINE
-    global pause_pressed
-    global started
+def accept_id() -> bool:
+    """ Job: validates the inputed ID, and returns trye"""
     pid = id_entry.get().strip()
     if pid == "":
         stimulus_label.config(text="Please enter a participant ID!")
-        return
+        return False
     experiment.set_participant(pid)
+    return True
+
+def begining_the_test() -> None:
+    """Job: destrys ID format and structions to begin the test"""
+    global pause_pressed
+    global started        
     id_entry.destroy()        # the form leaves the stage
     start_button.destroy()
+    instructions_label.destroy()
+    Stroop_test_label.destroy()
     pause_pressed = False     # a Pause clicked before Start must not carry over
     started = True
     next_trial()
 
+def start() -> None:
+    """Job: begins test"""
+    if accept_id():
+        begining_the_test()                      
 
-def finish() -> None:
-                            # TODO does mtwo jobs, thus must split - calls save_data  and Show_results???
+def save_data() -> None:
+    """Job: save the results in a file"""
     saved = experiment.save_results(experiment.get_participant() + ".txt")
     stimulus_label.config(text="Done! Thank you." if saved else "Done! But your data could not be saved.",fg="black")
-
-
+    
+def clear_screen() -> None:
+    """Job: removes the test screen"""
     pause_button.destroy()
     start_button.destroy()
     quit_button.destroy()
     stimulus_label_correct.destroy()
 
+def results() -> None:
+    """Job: displays the average reaction time"""
+    means = experiment.get_means()
     for key in experiment.get_means():
-        text = tk.Label(
-            window,
-            text=f"{key}: {round(experiment.get_means()[key], 3)}",
-            fg="black",
-            font=("Arial", 20)
-        )
-        text.pack()
-
+            text = tk.Label(
+                window,
+                text=f"{key}: {round(experiment.get_means()[key], 3)}",
+                fg="black",
+                font=("Arial", 20)
+            )
+            text.pack()
+    
     destroy_button = tk.Button(window, text="Destroy window")
     destroy_button.config(command=quit_experiment)
     destroy_button.pack(pady=20)
-    
+
+def finish() -> None:
+    """ Job: ends the test and shows results"""
+    save_data()
+    clear_screen()
+    results()                                
 
 def pause() -> None:
-    # In- nothing
-    # Out - nothing
-    # One Job - stops and starts teh program
+    """ Job: stops and starts the program"""
     global pause_pressed 
     global accepting_keys
     global after_id
@@ -186,8 +212,8 @@ def pause() -> None:
         pause_pressed = False
         next_trial()    # show_stimulus turns accepting_keys back on
 
-
 def quit_experiment() -> None:
+    """Job:  closes the test window"""
     global retry_entry, retry_button
     if experiment.save_results(experiment.get_participant() + ".txt"):
         window.destroy()
@@ -205,11 +231,8 @@ def quit_experiment() -> None:
                                  command=save_with_new_id)
         retry_button.pack(pady=5)
 
-
 def save_with_new_id() -> None:
-    # In - nothing
-    # Out - nothing
-    # One Job - accepts a replacement ID and retrys the save
+    """Job: accepts a replacement ID and retrys the save"""
     if retry_entry is None:
         return
     new_id = retry_entry.get().strip()
