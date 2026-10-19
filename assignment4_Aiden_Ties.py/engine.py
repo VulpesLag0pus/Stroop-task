@@ -111,10 +111,15 @@ class Experiment:
         # Appends all info into .txt file
         self.__results.append(self.__participant + "/"
                               + str(self.__current + 1) + "/" + key + "/"
-                              + str(correct) + "/" + str(round(rt, 3))) 
+                              + str(correct) + "/" + str(round(rt, 3)))
 
-        if self.get_current()[0] == self.get_current()[1] :
-            # add the reaction time to the congruent running total 
+        if self.get_current()[0] == self.get_current()[1]: # add the reaction time to the congruent running total 
+                              + str(self.__current + 1) + "/" + self.get_current()[0] + "/" + self.get_current()[1] + "/" 
+                              + f'{"Congruent" if self.current_is_congruent() else "Incongruent"}' + "/" + key + "/"
+                              + str(correct) + "/" + str(round(rt, 3)) 
+        
+        if self.current_is_congruent():
+
             self.__total_congruent = self.__total_congruent + rt
             self.__amount_congruent = self.__amount_congruent + 1
         else:
@@ -140,9 +145,10 @@ class Experiment:
             return False
 
     def get_current(self) -> tuple[str, str]:
+
         """
         Input: nothing 
-        Output: a word of a color and colored in a ink or "," if no trials are left
+        Output: a word of a color and colored in a ink (tuple, (word,ink) or "," if no trials are left
         Job: presents the stimulus for the present trial
         """
         if not self.has_next():
@@ -159,3 +165,10 @@ class Experiment:
         congruent_mean = self.__total_congruent / self.__amount_congruent if self.__amount_congruent != 0 else 0
         incongruent_mean = self.__total_incongruent / self.__amount_incongruent if self.__amount_incongruent != 0 else 0
         return {'Congruent RT':congruent_mean, 'Incongruent RT':incongruent_mean,}
+
+    def current_is_congruent(self) -> bool:
+        '''Returns if current stimuli is congruent'''
+        if self.get_current()[0] == self.get_current()[1]:
+            return True
+        else:
+            return False
