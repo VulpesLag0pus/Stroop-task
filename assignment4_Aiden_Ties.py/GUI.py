@@ -253,7 +253,7 @@ def finish() -> None:
     Output: nothing
     Job: ends the test and shows results
     """
-    stimulus_label.config(text="Done! Thank you.")
+    stimulus_label.config(text="Done! Thank you.", fg="black")
     clear_screen()
     results()                                
 
