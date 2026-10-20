@@ -1,6 +1,6 @@
 
 import tkinter as tk
-from random import randint, choice, shuffle
+from random import randint
 from time import time
 import engine
 
@@ -334,6 +334,13 @@ window.bind("r", key_pressed)
 window.bind("g", key_pressed)   
 window.bind("b", key_pressed)
 window.bind("y", key_pressed)
+
+window.bind("R", key_pressed)
+window.bind("G", key_pressed)   
+window.bind("B", key_pressed)
+window.bind("Y", key_pressed)
+
+window.protocol("WM_DELETE_WINDOW", quit_experiment)
 
 window.mainloop()
 

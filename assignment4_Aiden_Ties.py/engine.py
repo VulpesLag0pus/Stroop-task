@@ -1,12 +1,12 @@
-from random import randint, choice, shuffle
+from random import choice, shuffle
 from time import time
 
 
 class Experiment:
 
-    def __init__(self, nr_trials: int = 5) -> None:
+    def __init__(self, nr_trials: int = 30) -> None:
         """
-        Input: how many trials it should run, default 10 trials 
+        Input: how many trials it should run, default 30 trials 
         Output: nothing 
         Job: sets the trials up with default values
         """
@@ -110,7 +110,6 @@ class Experiment:
 
         # Appends all info into .txt file
         self.__results.append(self.__participant + "/"
-                              + str(self.__current + 1) + "/" + key + "/"
                               + str(self.__current + 1) + "/" + self.get_current()[0] + "/" + self.get_current()[1] + "/" 
                               + f'{"Congruent" if self.current_is_congruent() else "Incongruent"}' + "/" + key + "/"
                               + str(correct) + "/" + str(round(rt, 3)))
