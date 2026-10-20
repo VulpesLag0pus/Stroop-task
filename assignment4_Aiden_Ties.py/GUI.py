@@ -79,7 +79,7 @@ def next_trial() -> None:
         finish()
         if hearts == 0:
             # if the hearts run out it replaces the end window with the message 'done' with the message below 
-            stimulus_label.config(text= "Your hearts ran out, you made too many mistakes!")
+            stimulus_label.config(text= "Your hearts ran out, you made too many mistakes!", fg="black")
         return
     stimulus_label.config(text="+", fg="black") # creates an addition sign inbetween trials
     after_id = window.after(randint(800, 1500), show_stimulus)
@@ -166,16 +166,26 @@ def key_pressed(event: tk.Event) -> None:
         next_trial()
 
 #           ----Saving and Quitting Experiment----
+def is_valid_id(pid: str) -> bool:
+    """
+    Input: a participant ID
+    Output: True if the ID is not empty and only has letters, numbers, - or _
+    Job: checks that the ID is safe to use as a file name
+    """
+    return pid != "" and all(c.isalnum() or c in "-_" for c in pid)
 
 def accept_id() -> bool:
     """
     Input: nothing
-    Output: true if the ID is entered or false if the box is empty
-    Job: validates the inputted ID, checking it is not empty, and saves ID
+    Output: true if the ID is valid or false if it is empty or has special characters
+    Job: validates the inputted ID and saves it
     """
     pid = id_entry.get().strip()
     if pid == "":
         stimulus_label.config(text="Please enter a participant ID!")
+        return False
+    if not is_valid_id(pid):
+        stimulus_label.config(text="Use only letters, numbers, - or _")
         return False
     experiment.set_participant(pid)
     return True
@@ -205,14 +215,6 @@ def start() -> None:
     if accept_id():
         beginning_the_test()                      
 
-def save_data() -> None:
-    """
-    Input: nothing
-    Output: nothing
-    Job: save the results in a file
-    """
-    saved = experiment.save_results(experiment.get_participant() + ".txt")
-    stimulus_label.config(text="Done! Thank you." if saved else "Done! But your data could not be saved.",fg="black")
     
 def clear_screen() -> None:
     """
@@ -251,7 +253,7 @@ def finish() -> None:
     Output: nothing
     Job: ends the test and shows results
     """
-    save_data()
+    stimulus_label.config(text="Done! Thank you.")
     clear_screen()
     results()                                
 
@@ -271,12 +273,12 @@ def pause() -> None:
         if after_id is not None:
             window.after_cancel(after_id)   # stop a pending stimulus
             after_id = None
-        experiment.reset_trial() # ignores the unfinished trial's runnig time, thus it is not included in the recordings
+        experiment.reset_trial() # ignores the unfinished trial's running time, thus it is not included in the recordings
         pause_pressed = True
         accepting_keys = False
     else:
         pause_pressed = False
-        next_trial()    # show_stimulus turns accepting_keys back on
+        next_trial()
 
 def quit_experiment() -> None:
     """
@@ -285,6 +287,8 @@ def quit_experiment() -> None:
     Job: saves the results and closes the test window
     """
     global retry_entry, retry_button
+    clear_screen()
+
     if experiment.save_results(experiment.get_participant() + ".txt"):
         window.destroy()
         return
@@ -310,11 +314,13 @@ def save_with_new_id() -> None:
     if retry_entry is None:
         return
     new_id = retry_entry.get().strip()
-    if new_id == "" or not all(c.isalnum() or c in "-_" for c in new_id):
+    if not is_valid_id(new_id):
         stimulus_label.config(text="Use only letters, numbers, - or _",
                               fg="black")
         return
     experiment.set_participant(new_id)
+
+
     quit_experiment()
 
 #               ----Butons and Bindings----

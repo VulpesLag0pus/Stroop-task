@@ -4,7 +4,7 @@ from time import time
 
 class Experiment:
 
-    def __init__(self, nr_trials: int = 10) -> None:
+    def __init__(self, nr_trials: int = 5) -> None:
         """
         Input: how many trials it should run, default 10 trials 
         Output: nothing 
@@ -39,7 +39,7 @@ class Experiment:
             for _ in range(int(nr_trials/2)):
                 word = choice(self.__COLORS)
                 ink = word  # for congruent trials 
-                self.__trials.append((word, ink)) 
+                self.__trials.append([word, ink]) 
 
             shuffle(self.__trials) # mixes congruent and incongruent trials, thus can not be predicted
 
@@ -111,7 +111,9 @@ class Experiment:
         # Appends all info into .txt file
         self.__results.append(self.__participant + "/"
                               + str(self.__current + 1) + "/" + key + "/"
-                              + str(correct) + "/" + str(round(rt, 3))) 
+                              + str(self.__current + 1) + "/" + self.get_current()[0] + "/" + self.get_current()[1] + "/" 
+                              + f'{"Congruent" if self.current_is_congruent() else "Incongruent"}' + "/" + key + "/"
+                              + str(correct) + "/" + str(round(rt, 3)))
 
         if self.get_current()[0] == self.get_current()[1] :
             # add the reaction time to the congruent running total 
@@ -159,3 +161,10 @@ class Experiment:
         congruent_mean = self.__total_congruent / self.__amount_congruent if self.__amount_congruent != 0 else 0
         incongruent_mean = self.__total_incongruent / self.__amount_incongruent if self.__amount_incongruent != 0 else 0
         return {'Congruent RT':congruent_mean, 'Incongruent RT':incongruent_mean,}
+
+    def current_is_congruent(self) -> bool:
+        '''Returns if current stimuli is congruent'''
+        if self.get_current()[0] == self.get_current()[1]:
+            return True
+        else:
+            return False
