@@ -143,7 +143,7 @@ class Experiment:
     def get_current(self) -> tuple[str, str]:
         """
         Input: nothing 
-        Output: a word of a color and colored in a ink or "," if no trials are left
+        Output: a word of a color and colored in a ink (tuple, (word,ink)) or "," if no trials are left
         Job: presents the stimulus for the present trial
         """
         if not self.has_next():
